@@ -1,10 +1,10 @@
-package ninja.parkverbot.restserverexercise;
+package ninja.parkverbot.RestServer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RestServerExerciseApplicationTests {
+class RestServerApplicationTests {
 
 	@Test
 	void contextLoads() {

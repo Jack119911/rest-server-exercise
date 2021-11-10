@@ -1,13 +1,13 @@
-package ninja.parkverbot.restserverexercise;
+package ninja.parkverbot.RestServer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RestServerExerciseApplication {
+public class RestServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RestServerExerciseApplication.class, args);
+		SpringApplication.run(RestServerApplication.class, args);
 	}
 
 }
