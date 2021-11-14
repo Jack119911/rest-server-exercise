@@ -1,8 +1,12 @@
 package ninja.parkverbot.restserver.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class User {
 
-    private int id;
+    public static final int NO_ID = -1;
+
+    private int id = NO_ID;
     private String login;
     private String passwordHash;
     private String fname;
