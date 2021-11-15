@@ -12,7 +12,7 @@ public class UserDatabaseService {
     public User createUser(User newUser) throws SQLException {
         try (var connection = createConnection(); var statement = connection.createStatement()) {
             insertNewUser(newUser, statement);
-            return getUserByLogin(newUser, statement);
+            return getUserByLogin(newUser.getLogin());
         }
     }
 
@@ -51,7 +51,7 @@ public class UserDatabaseService {
                     "UPDATE user " +
                     "SET login = '%s', password = '%s', fname = '%s', lname = '%s', email = '%s' " +
                     "WHERE id = %s;",
-                user.getLogin(), user.getPasswordHash(), user.getFname(), user.getLname(), user.getEmail(), user.getId()
+                user.getLogin(), user.getPassword(), user.getFname(), user.getLname(), user.getEmail(), user.getId()
         );
         statement.executeUpdate(updateUser);
     }
@@ -63,13 +63,13 @@ public class UserDatabaseService {
             insertNewUser = String.format(
                     "INSERT INTO user (login, password, fname, lname, email) " +
                     "VALUES ('%s', '%s', '%s', '%s', '%s');",
-                    newUser.getLogin(), newUser.getPasswordHash(), newUser.getFname(), newUser.getLname(), newUser.getEmail()
+                    newUser.getLogin(), newUser.getPassword(), newUser.getFname(), newUser.getLname(), newUser.getEmail()
             );
         } else {
             insertNewUser = String.format(
                     "INSERT INTO user (id, login, password, fname, lname, email) " +
                     "VALUES ('%s', '%s', '%s', '%s', '%s', '%s');",
-                    newUser.getId(), newUser.getLogin(), newUser.getPasswordHash(), newUser.getFname(), newUser.getLname(), newUser.getEmail()
+                    newUser.getId(), newUser.getLogin(), newUser.getPassword(), newUser.getFname(), newUser.getLname(), newUser.getEmail()
             );
         }
         System.out.println(insertNewUser);
@@ -84,6 +84,7 @@ public class UserDatabaseService {
         return statement.executeQuery(selectUser);
     }
 
+    // ToDo replace with getUserByLogin(String login)
     private User getUserByLogin(User newUser, Statement statement) throws SQLException {
         var selectUser =
                 "SELECT * " +
@@ -91,6 +92,17 @@ public class UserDatabaseService {
                 "WHERE login='" + newUser.getLogin() + "';";
         var result = statement.executeQuery(selectUser);
         return createUserFromResult(result);
+    }
+
+    public User getUserByLogin(String login) throws SQLException {
+        try (var connection = createConnection(); var statement = connection.createStatement()) {
+            var selectUser =
+                    "SELECT * " +
+                    "FROM user " +
+                    "WHERE login='" + login + "';";
+            var result = statement.executeQuery(selectUser);
+            return createUserFromResult(result);
+        }
     }
 
     private User createUserFromResult(ResultSet result) throws SQLException {
@@ -109,6 +121,7 @@ public class UserDatabaseService {
         return createdUser;
     }
 
+    // Password is contained in the source code just for this example...never use in real code!
     private Connection createConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:mariadb://localhost:3306/restserver", "server", "server");
     }

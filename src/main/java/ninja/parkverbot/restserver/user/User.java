@@ -1,21 +1,19 @@
 package ninja.parkverbot.restserver.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class User {
 
     public static final int NO_ID = -1;
 
     private int id = NO_ID;
     private String login;
-    private String passwordHash;
+    private String password;
     private String fname;
     private String lname;
     private String email;
 
-    public User(String login, String passwordHash, String fname, String lname, String email) {
+    public User(String login, String password, String fname, String lname, String email) {
         this.login = login;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.fname = fname;
         this.lname = lname;
         this.email = email;
@@ -37,12 +35,12 @@ public class User {
         this.login = login;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFname() {
