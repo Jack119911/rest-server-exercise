@@ -46,6 +46,40 @@ public class UserDatabaseService {
         }
     }
 
+    public User getUserByLogin(String login) throws SQLException {
+        try (var connection = createConnection(); var statement = connection.createStatement()) {
+            var selectUser =
+                    "SELECT * " +
+                            "FROM user " +
+                            "WHERE login='" + login + "';";
+            var result = statement.executeQuery(selectUser);
+            return createUserFromResult(result);
+        }
+    }
+
+    public boolean isAdmin(User user) throws SQLException {
+        try (var connection = createConnection(); var statement = connection.createStatement()) {
+            var isAdminQuery =
+                    "SELECT role_admin " +
+                            "FROM role " +
+                            "WHERE user_id='" + user.getId() + "';";
+            var result = statement.executeQuery(isAdminQuery);
+            if (!result.first()) {
+                return false;
+            } else {
+                return result.getInt("role_admin") == 1;
+            }
+        }
+    }
+
+    public boolean userWithIdHasLogin(int id, String login) {
+        try {
+            return getUser(id).getLogin().equals(login);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private void updateUser(User user, Statement statement) throws SQLException {
         var updateUser = String.format(
                     "UPDATE user " +
@@ -82,27 +116,6 @@ public class UserDatabaseService {
                         "FROM user " +
                         "WHERE id = " + id + ";";
         return statement.executeQuery(selectUser);
-    }
-
-    // ToDo replace with getUserByLogin(String login)
-    private User getUserByLogin(User newUser, Statement statement) throws SQLException {
-        var selectUser =
-                "SELECT * " +
-                "FROM user " +
-                "WHERE login='" + newUser.getLogin() + "';";
-        var result = statement.executeQuery(selectUser);
-        return createUserFromResult(result);
-    }
-
-    public User getUserByLogin(String login) throws SQLException {
-        try (var connection = createConnection(); var statement = connection.createStatement()) {
-            var selectUser =
-                    "SELECT * " +
-                    "FROM user " +
-                    "WHERE login='" + login + "';";
-            var result = statement.executeQuery(selectUser);
-            return createUserFromResult(result);
-        }
     }
 
     private User createUserFromResult(ResultSet result) throws SQLException {

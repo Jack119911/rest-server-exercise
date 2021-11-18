@@ -1,8 +1,9 @@
 package ninja.parkverbot.restserver.user;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/user")
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class UserController {
 
     UserDatabaseService userDatabaseService;
@@ -37,6 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("@userDatabaseService.userWithIdHasLogin(#id, authentication.name) || hasAuthority('ROLE_ADMIN')")
     public User updateUser(@PathVariable int id, @RequestBody User userToUpdate) throws SQLException {
         userToUpdate.setPassword(passwordEncoder.encode(userToUpdate.getPassword()));
         userToUpdate.setId(id);
@@ -46,6 +49,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@userDatabaseService.userWithIdHasLogin(#id, authentication.name) || hasAuthority('ROLE_ADMIN')")
     public User getUser(@PathVariable int id) throws SQLException {
         try {
             var requestedUser = userDatabaseService.getUser(id);
@@ -59,6 +63,7 @@ public class UserController {
     // ToDo change successful response code to 204
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void deleteUser(@PathVariable int id) throws SQLException {
         try{
             userDatabaseService.deleteUser(id);
